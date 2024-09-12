@@ -1,0 +1,34 @@
+query northernVineyards{
+  description: "Select all vineyards in the northern hemisphere"
+  statement:
+      SELECT biswas.grower.Vineyard
+        WHERE (location.latitude > 0)
+}
+
+query largeWineBatches{
+  description: "Select batches of wine larger than the given parameter"
+  statement:
+    SELECT biswas.producer.BulkWine
+      WHERE (quantity > _$quantityParam)
+}
+
+query historianQuery{
+  description: "Find all the batches of wine created by a producer"
+  statement:
+      SELECT org.hyperledger.composer.system.HistorianRecord
+          WHERE ((transactionType == 'biswas.base.transformBatch') AND (participantInvoking == _$producerParam))
+}
+
+query previousOwners{
+  description: "Find all the previous owners of a wine bottle"
+  statement:
+    SELECT org.hyperledger.composer.system.HistorianRecord
+      WHERE (transactionType == 'biswas.distribution.transferBottle')
+}
+
+query getBatches{
+  description: "Get all the batches owned by a participant"
+  statement:
+    SELECT biswas.base.Batch
+      WHERE (owner == _$participantID)
+}

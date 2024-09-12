@@ -1,0 +1,9 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+}
+.leaflet-container {
+  height: 250px;
+  width: 350px;
+  margin: 30px auto 0 auto;
+}

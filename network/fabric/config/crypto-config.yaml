@@ -1,0 +1,36 @@
+OrdererOrgs:
+  - Name: Orderer
+    Domain: biswas.com
+    Specs:
+      - Hostname: orderer
+PeerOrgs:
+  - Name: Grower
+    Domain: grower.biswas.com
+    Template:
+      Count: 2 # two peers
+    Users:
+      Count: 1 # 1 user account in addition to admin
+  - Name: Producer
+    Domain: producer.biswas.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  - Name: Filler
+    Domain: filler.biswas.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  - Name: Distributor
+    Domain: distributor.biswas.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  - Name: Retailer
+    Domain: retailer.biswas.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1

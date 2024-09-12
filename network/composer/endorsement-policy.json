@@ -1,0 +1,26 @@
+{
+    "identities": [
+        {
+            "role": {
+                "name": "member",
+                "mspId": "DistributorMSP"
+            }
+        },
+        {
+            "role": {
+                "name": "member",
+                "mspId": "RetailerMSP"
+            }
+        }
+    ],
+    "policy": {
+        "2-of": [
+            {
+                "signed-by": 0
+            },
+            {
+                "signed-by": 1
+            }
+        ]
+    }
+}

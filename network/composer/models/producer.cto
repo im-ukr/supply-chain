@@ -1,0 +1,14 @@
+namespace biswas.producer
+
+import biswas.base.*
+import biswas.grower.Grapes
+
+participant WineProducer extends Actor {
+}
+
+asset BulkWine extends Batch {
+  o String[] additives optional
+  o Integer year
+  --> Grapes grapes
+  --> WineProducer producer
+}

@@ -1,0 +1,250 @@
+version: '2'
+
+networks:
+  biswas:
+
+services:
+  orderer.biswas.com:
+    extends:
+      file:   base.yaml
+      service: orderer
+    networks:
+      - biswas
+
+  ### Grower ###
+  ca.grower.biswas.com:
+    extends:
+      file:  grower.yaml
+      service: ca
+    networks:
+      - biswas
+
+  peer0-db.grower.biswas.com:
+    extends:
+      file: grower.yaml
+      service: peer0-db
+    networks:
+      - biswas
+
+  peer1-db.grower.biswas.com:
+    extends:
+      file: grower.yaml
+      service: peer1-db
+    networks:
+      - biswas
+
+  peer0.grower.biswas.com:
+    extends:
+      file:  grower.yaml
+      service: peer0
+    networks:
+      - biswas
+    depends_on:
+      - peer0-db.grower.biswas.com
+
+  peer1.grower.biswas.com:
+    extends:
+      file:  grower.yaml
+      service: peer1
+    networks:
+      - biswas
+    depends_on:
+      - peer1-db.grower.biswas.com
+
+  ### Producer ###
+  ca.producer.biswas.com:
+    extends:
+      file:  producer.yaml
+      service: ca
+    networks:
+      - biswas
+
+  peer0-db.producer.biswas.com:
+    extends:
+      file: producer.yaml
+      service: peer0-db
+    networks:
+      - biswas
+
+  peer1-db.producer.biswas.com:
+    extends:
+      file: producer.yaml
+      service: peer1-db
+    networks:
+      - biswas
+
+  peer0.producer.biswas.com:
+    extends:
+      file:  producer.yaml
+      service: peer0
+    networks:
+      - biswas
+    depends_on:
+      - peer0-db.producer.biswas.com
+
+  peer1.producer.biswas.com:
+    extends:
+      file:  producer.yaml
+      service: peer1
+    networks:
+      - biswas
+    depends_on:
+      - peer1-db.producer.biswas.com
+
+  ### Filler ###
+  ca.filler.biswas.com:
+    extends:
+      file: filler.yaml
+      service: ca
+    networks:
+      - biswas
+
+  peer0-db.filler.biswas.com:
+    extends:
+      file: filler.yaml
+      service: peer0-db
+    networks:
+      - biswas
+
+  peer1-db.filler.biswas.com:
+    extends:
+      file: filler.yaml
+      service: peer1-db
+    networks:
+      - biswas
+
+  peer0.filler.biswas.com:
+    extends:
+      file: filler.yaml
+      service: peer0
+    networks:
+      - biswas
+    depends_on:
+      - peer0-db.filler.biswas.com
+
+  peer1.filler.biswas.com:
+    extends:
+      file: filler.yaml
+      service: peer1
+    networks:
+      - biswas
+    depends_on:
+      - peer1-db.filler.biswas.com
+
+  ### Distributor ###
+  ca.distributor.biswas.com:
+    extends:
+      file: distributor.yaml
+      service: ca
+    networks:
+      - biswas
+
+  peer0-db.distributor.biswas.com:
+    extends:
+      file: distributor.yaml
+      service: peer0-db
+    networks:
+      - biswas
+
+  peer1-db.distributor.biswas.com:
+    extends:
+      file: distributor.yaml
+      service: peer1-db
+    networks:
+      - biswas
+
+  peer0.distributor.biswas.com:
+    extends:
+      file: distributor.yaml
+      service: peer0
+    networks:
+      - biswas
+    depends_on:
+      - peer0-db.distributor.biswas.com
+
+  peer1.distributor.biswas.com:
+    extends:
+      file: distributor.yaml
+      service: peer1
+    networks:
+      - biswas
+    depends_on:
+      - peer1-db.distributor.biswas.com
+
+  ### Retailer ###
+  ca.retailer.biswas.com:
+    extends:
+      file: retailer.yaml
+      service: ca
+    networks:
+      - biswas
+
+  peer0-db.retailer.biswas.com:
+    extends:
+      file: retailer.yaml
+      service: peer0-db
+    networks:
+      - biswas
+
+  peer1-db.retailer.biswas.com:
+    extends:
+      file: retailer.yaml
+      service: peer1-db
+    networks:
+      - biswas
+
+  peer0.retailer.biswas.com:
+    extends:
+      file: retailer.yaml
+      service: peer0
+    networks:
+      - biswas
+    depends_on:
+      - peer0-db.retailer.biswas.com
+
+  peer1.retailer.biswas.com:
+    extends:
+      file: retailer.yaml
+      service: peer1
+    networks:
+      - biswas
+    depends_on:
+      - peer1-db.retailer.biswas.com
+
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=
+      - CORE_PEER_LOCALMSPID=
+      - CORE_PEER_MSPCONFIGPATH=
+    working_dir: /opt/gopath
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../artifacts:/opt/gopath/artifacts/
+        - ../createChannel.sh:/opt/gopath/createChannel.sh
+    depends_on:
+      - orderer.biswas.com
+      - ca.grower.biswas.com
+      - peer0.grower.biswas.com
+      - peer1.grower.biswas.com
+      - ca.producer.biswas.com
+      - peer0.producer.biswas.com
+      - peer1.producer.biswas.com
+      - ca.filler.biswas.com
+      - peer0.filler.biswas.com
+      - peer1.filler.biswas.com
+      - ca.distributor.biswas.com
+      - peer0.distributor.biswas.com
+      - peer1.distributor.biswas.com
+      - ca.retailer.biswas.com
+      - peer0.retailer.biswas.com
+      - peer1.retailer.biswas.com
+    networks:
+      - biswas

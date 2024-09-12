@@ -1,0 +1,23 @@
+namespace biswas.distribution
+
+import biswas.base.Batch
+import biswas.base.Actor
+import biswas.filler.WineBottle
+
+participant Distributor extends Actor {
+}
+
+participant Retailer extends Actor {
+}
+
+participant Consumer extends Actor {
+}
+
+transaction sellBottle {
+  --> WineBottle wineBottle
+}
+
+transaction transferBottle {
+  --> WineBottle wineBottle
+  --> Actor newOwner
+}
