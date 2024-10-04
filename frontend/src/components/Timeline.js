@@ -1,76 +1,83 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import { Step, Icon } from 'semantic-ui-react';
-
 import { parseDate } from '../controllers/api';
 
-const Timeline = props => {
-  const { origins, history } = props;
-  if (history.length === 0) return null;
+const Timeline = ({ origins, history }) => {
+  if (!history || history.length === 0) return null;
+
+  const stepsData = [
+    {
+      icon: 'dollar',
+      title: 'Sold to Consumer',
+      description: parseDate(history[1]?.timestamp),
+    },
+    {
+      icon: 'truck',
+      title: 'Sold to Retailer',
+      description: parseDate(history[0]?.[0]?.timestamp),
+    },
+    {
+      icon: 'truck',
+      title: 'Sold to Distributor',
+      description: parseDate(history[0]?.[1]?.timestamp),
+    },
+    {
+      icon: 'filter',
+      title: 'Bottled',
+      description: parseDate(origins?.bulkToBottled?.timestamp),
+    },
+    {
+      icon: 'theme',
+      title: 'Produced',
+      description: parseDate(origins?.grapesToBulk?.timestamp),
+    },
+    {
+      icon: 'leaf',
+      title: 'Harvested',
+      description: parseDate(origins?.grapesData?.harvestDate),
+    },
+  ];
 
   return (
-    <div>
-      <Step.Group fluid vertical style={{ textAlign: 'center' }}>
-        <Step>
-          <Icon name="dollar" />
+    <Step.Group fluid vertical style={{ textAlign: 'center' }}>
+      {stepsData.map((step, index) => (
+        <Step key={index}>
+          <Icon name={step.icon} />
           <Step.Content>
-            <Step.Title>Sold to Consumer</Step.Title>
-            <Step.Description>
-              {parseDate(history[1].timestamp)}
-            </Step.Description>
+            <Step.Title>{step.title}</Step.Title>
+            <Step.Description>{step.description || 'N/A'}</Step.Description>
           </Step.Content>
         </Step>
-        <Step>
-          <Icon name="truck" />
-          <Step.Content>
-            <Step.Title>Sold to Retailer</Step.Title>
-            <Step.Description>
-              {parseDate(history[0][0].timestamp)}
-            </Step.Description>
-          </Step.Content>
-        </Step>
-        <Step>
-          <Icon name="truck" />
-          <Step.Content>
-            <Step.Title>Sold to Distributor</Step.Title>
-            <Step.Description>
-              {parseDate(history[0][1].timestamp)}
-            </Step.Description>
-          </Step.Content>
-        </Step>
-        <Step>
-          <Icon name="filter" />
-          <Step.Content>
-            <Step.Title>Bottled</Step.Title>
-            <Step.Description>
-              {parseDate(origins.bulkToBottled.timestamp)}
-            </Step.Description>
-          </Step.Content>
-        </Step>
-
-        <Step>
-          <Icon name="theme" />
-          <Step.Content>
-            <Step.Title>Produced</Step.Title>
-            <Step.Description>
-              {parseDate(origins.grapesToBulk.timestamp)}
-            </Step.Description>
-          </Step.Content>
-        </Step>
-        <Step>
-          <Icon name="leaf" />
-          <Step.Content>
-            <Step.Title>Harvested</Step.Title>
-            <Step.Description>
-              {parseDate(origins.grapesData.harvestDate)}
-            </Step.Description>
-          </Step.Content>
-        </Step>
-      </Step.Group>
-    </div>
+      ))}
+    </Step.Group>
   );
 };
 
-Timeline.propTypes = {};
+Timeline.propTypes = {
+  origins: PropTypes.shape({
+    bulkToBottled: PropTypes.shape({
+      timestamp: PropTypes.string,
+    }),
+    grapesToBulk: PropTypes.shape({
+      timestamp: PropTypes.string,
+    }),
+    grapesData: PropTypes.shape({
+      harvestDate: PropTypes.string,
+    }),
+  }).isRequired,
+  history: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          timestamp: PropTypes.string,
+        })
+      ),
+      PropTypes.shape({
+        timestamp: PropTypes.string,
+      }),
+    ])
+  ).isRequired,
+};
 
 export default Timeline;
