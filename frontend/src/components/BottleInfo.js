@@ -1,10 +1,9 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import { Header, Segment, Grid } from 'semantic-ui-react';
 
-const BottleInfo = props => {
-  const { data } = props;
-  if (Object.values(data).length === 0) return null;
+const BottleInfo = ({ data }) => {
+  if (!data || Object.keys(data).length === 0) return null;
 
   return (
     <div>
@@ -12,22 +11,31 @@ const BottleInfo = props => {
         {data.year} {data.name}
       </Header>
       <Segment basic style={{ textAlign: 'left' }}>
-        <Grid columns={3} style={{ fontSize: '1.1rem' }}>
-          <Grid.Column />
-          <Grid.Column>
-            <Grid.Row>Strength: </Grid.Row>
-            <Grid.Row>Additives: </Grid.Row>
-          </Grid.Column>
-          <Grid.Column>
-            <Grid.Row>{data.alcoholPercentage}%</Grid.Row>
-            <Grid.Row>None</Grid.Row>
-          </Grid.Column>
+        <Grid columns={2} style={{ fontSize: '1.1rem' }}>
+          <Grid.Row>
+            <Grid.Column textAlign="right" width={4}>
+              <strong>Strength:</strong>
+            </Grid.Column>
+            <Grid.Column>{data.alcoholPercentage}%</Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column textAlign="right" width={4}>
+              <strong>Additives:</strong>
+            </Grid.Column>
+            <Grid.Column>None</Grid.Column>
+          </Grid.Row>
         </Grid>
       </Segment>
     </div>
   );
 };
 
-BottleInfo.propTypes = {};
+BottleInfo.propTypes = {
+  data: PropTypes.shape({
+    year: PropTypes.string,
+    name: PropTypes.string,
+    alcoholPercentage: PropTypes.number,
+  }).isRequired,
+};
 
 export default BottleInfo;
