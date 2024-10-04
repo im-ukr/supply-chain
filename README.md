@@ -104,8 +104,6 @@ The API explorer is now located http://localhost:3000/explorer.
 * Navigate to the frontend at http://localhost:3001/
 * Search for the copied bottleID.
 
-<img src="docs/frontend.png" width="600">
-
 # Development
 
 ## Unit tests
