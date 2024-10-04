@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
-import {
-  getBottleData,
-  getOwnershipHistory,
-  getOrigins
-} from './controllers/trace';
-
+import { getBottleData, getOwnershipHistory, getOrigins } from './controllers/trace';
 import { Grid, Header } from 'semantic-ui-react';
 import BottleInfo from './components/BottleInfo';
 import Timeline from './components/Timeline';
@@ -15,94 +10,70 @@ import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 
 class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      searchText: '',
-      loading: false,
-      bottleData: {},
-      ownershipHistory: [],
-      origins: [],
-      couldNotFind: false
-    };
-  }
+  state = {
+    searchText: '',
+    loading: false,
+    bottleData: null,
+    ownershipHistory: [],
+    origins: [],
+    couldNotFind: false,
+  };
 
-  handleChange = (e, data) => {
-    this.setState({ searchText: data.value });
+  handleChange = (_, { value }) => {
+    this.setState({ searchText: value });
   };
 
   handleClick = async () => {
-    const searchTerm = this.state.searchText;
-    if (searchTerm === '') {
-      return false;
-    }
+    const { searchText } = this.state;
+    if (!searchText) return;
 
     this.setState({ loading: true, couldNotFind: false });
-    const bottleId = searchTerm; // 'WINEBOTTLE_01521303744927';
-    const bottleData = await getBottleData(bottleId);
-    if (bottleData) {
-      const ownershipHistory = await getOwnershipHistory(bottleId);
-      const origins = await getOrigins(bottleData);
-      this.setState({
-        bottleData,
-        ownershipHistory,
-        origins,
-        loading: false
-      });
-    } else {
+
+    try {
+      const bottleData = await getBottleData(searchText);
+      if (bottleData) {
+        const [ownershipHistory, origins] = await Promise.all([
+          getOwnershipHistory(searchText),
+          getOrigins(bottleData),
+        ]);
+
+        this.setState({ bottleData, ownershipHistory, origins, loading: false });
+      } else {
+        this.setState({ couldNotFind: true, loading: false });
+      }
+    } catch {
       this.setState({ couldNotFind: true, loading: false });
     }
   };
 
   render() {
-    const state = this.state;
+    const { searchText, loading, bottleData, ownershipHistory, origins, couldNotFind } = this.state;
+
     return (
       <div className="App">
         <Grid textAlign="center" style={{ height: '100%', margin: 0 }}>
           <Grid.Column>
-            <Grid.Row textAlign="center" style={{ padding: '50px' }}>
-              <Header as="h1" style={{ fontSize: '3rem' }}>
-                Wine Tracker
-              </Header>
-            </Grid.Row>
-            <Grid.Row>
-              <SearchInput
-                onChange={this.handleChange}
-                onClick={this.handleClick}
-                loading={this.state.loading}
-              />
-            </Grid.Row>
-            <Grid.Row>
-              <NotFoundMessage render={this.state.couldNotFind} />
-            </Grid.Row>
-            <Grid.Row>
-              <Grid
-                columns={8}
-                stackable
-                reversed="mobile"
-                style={{ marginTop: '30px' }}
-              >
-                <Grid.Column width={2} />
-
-                <Grid.Column width={5}>
-                  <Timeline
-                    history={state.ownershipHistory}
-                    origins={state.origins}
-                    style={{ margin: '10px auto' }}
-                  />
-                </Grid.Column>
-                <Grid.Column width={1} />
-                <Grid.Column width={7}>
-                  <BottleInfo
-                    data={state.bottleData}
-                    style={{ margin: '10px auto' }}
-                  />
-                  <div />
-                  <Vineyard data={state.origins} />
-                </Grid.Column>
-                <Grid.Column width={1} />
-              </Grid>
-            </Grid.Row>
+            <Header as="h1" style={{ fontSize: '3rem', padding: '50px' }}>
+              Wine Tracker
+            </Header>
+            <SearchInput onChange={this.handleChange} onClick={this.handleClick} loading={loading} />
+            <NotFoundMessage render={couldNotFind} />
+            <Grid columns={8} stackable style={{ marginTop: '30px' }}>
+              <Grid.Column width={2} />
+              <Grid.Column width={5}>
+                <Timeline history={ownershipHistory} origins={origins} style={{ margin: '10px auto' }} />
+              </Grid.Column>
+              <Grid.Column width={1} />
+              <Grid.Column width={7}>
+                {bottleData && (
+                  <>
+                    <BottleInfo data={bottleData} style={{ margin: '10px auto' }} />
+                    <Vineyard data={origins} />
+                  </>
+                )}
+              </Grid.Column>
+              <Grid.Column width={1} />
+            </Grid>
           </Grid.Column>
         </Grid>
       </div>
